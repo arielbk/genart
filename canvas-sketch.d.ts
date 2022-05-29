@@ -186,4 +186,5 @@ declare module 'canvas-sketch-util/math' {
 declare module 'canvas-sketch-util/random' {
   declare const getRandomSeed: () => number;
   declare const setSeed: (seed: string | number) => void;
+  declare const value: (seed?: string) => number;
 }
