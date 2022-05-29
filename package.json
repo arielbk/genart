@@ -4,7 +4,10 @@
   "description": "",
   "main": "sketch.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "tsc --watch",
+    "sketch": "npx canvas-sketch-cli sketch.js",
+    "buildings": "npx canvas-sketch-cli buildings.js"
   },
   "keywords": [],
   "author": "",
@@ -13,5 +16,8 @@
     "canvas-sketch": "^0.7.5",
     "canvas-sketch-util": "^1.10.0",
     "nice-color-palettes": "^3.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.7.2"
   }
 }
