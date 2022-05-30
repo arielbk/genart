@@ -1,4 +1,4 @@
-import canvasSketch, { Props, SettingsObject } from 'canvas-sketch';
+import canvasSketch, { Props } from 'canvas-sketch';
 import { lerp } from 'canvas-sketch-util/math';
 import random from 'canvas-sketch-util/random';
 
@@ -10,8 +10,10 @@ const settings = {
   dimensions: [2048, 2048],
 };
 
+type Coordinate = [number, number];
+
 type Point = {
-  position: [number, number];
+  position: Coordinate;
 };
 
 const sketch = () => {
@@ -55,33 +57,76 @@ const sketch = () => {
       const randomIndex = Math.round(random.value() * (points.length - 1));
       return points[randomIndex];
     };
-    const uvToXy = ([u, v]: [number, number]) => {
+    const uvToXy = ([u, v]: Coordinate): Coordinate => {
       const x = lerp(margin, width - margin, u);
       const y = lerp(margin, width - margin, v);
       return [x, y];
     };
-    const [u1, v1] = getRandomPoint().position;
-    const [x1, y1] = uvToXy([u1, v1]);
-    const [u2, v2] = getRandomPoint().position;
-    const [x2, y2] = uvToXy([u2, v2]);
-    context.beginPath();
-    context.moveTo(x1, y1);
-    context.lineTo(x2, y2);
-    context.lineWidth = 8;
-    context.stroke();
 
-    // form a trapezoid with two parallel sides extending to bottom
-    const [_, lastY] = uvToXy([0, 1]);
-    context.moveTo(x1, y1);
-    context.lineTo(x1, lastY);
-    context.moveTo(x2, y2);
-    context.lineTo(x2, lastY);
-    context.lineTo(x1, lastY);
-    context.stroke();
+    const createTrapezoidPath = (): Coordinate[] => {
+      const [u1, v1] = getRandomPoint().position;
+      const [x1, y1] = uvToXy([u1, v1]);
+      const [u2, v2] = getRandomPoint().position;
+      const [x2, y2] = uvToXy([u2, v2]);
 
-    // fill with a colour and stroke with background colour
+      const point1: Coordinate = [x1, y1];
+      const point2: Coordinate = [x2, y2];
+
+      // form a trapezoid with two parallel sides extending to bottom
+      const [_, lastY] = uvToXy([0, 1]);
+      const point3: Coordinate = [x2, lastY];
+      const point4: Coordinate = [x1, lastY];
+
+      return [point1, point2, point3, point4];
+    };
+
+    const renderPoints = (points: Coordinate[]) => {
+      const [point1, point2, point3, point4] = points;
+      // create path
+      context.beginPath();
+      context.moveTo(point1[0], point1[1]);
+      context.lineTo(point2[0], point2[1]);
+      context.lineTo(point3[0], point3[1]);
+      context.lineTo(point4[0], point4[1]);
+      context.closePath();
+      // fill with a colour and stroke with background colour
+      context.lineWidth = 32;
+      context.strokeStyle = '#fff';
+      context.stroke();
+      context.fill();
+    };
+
+    // collect trapezoid paths
+    const trapezoids: Coordinate[][] = [];
+
+    // remaining points on grid (that aren't the bottom row)
+    let remainingPoints = points
+      .filter(({ position }) => position[1] !== 1)
+      .map(({ position }) => uvToXy(position));
+
     // repeat until all grid points are exhausted
+    while (remainingPoints.length > 0) {
+      trapezoids.push(createTrapezoidPath());
+      const takenTrapezoidPoints: Coordinate[] = [];
+      trapezoids.forEach((trapezoid) => {
+        takenTrapezoidPoints.push(trapezoid[0]);
+        takenTrapezoidPoints.push(trapezoid[1]);
+      });
+      remainingPoints = remainingPoints.filter((point) => {
+        return takenTrapezoidPoints.every(
+          (takenPoint) =>
+            point[0] !== takenPoint[0] || point[1] !== takenPoint[1]
+        );
+      });
+    }
+
     // layer shapes by their average y position
+    trapezoids.sort((a, b) => {
+      const aAverageY = (a[0][1] + a[1][1]) / 2;
+      const bAverageY = (b[0][1] + b[1][1]) / 2;
+      return aAverageY - bAverageY;
+    });
+    trapezoids.map((trapezoid) => renderPoints(trapezoid));
   };
 };
 
