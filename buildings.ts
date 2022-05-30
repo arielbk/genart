@@ -31,26 +31,13 @@ const sketch = () => {
     return points;
   };
 
-  const points = createGrid(6, 6);
+  const points = createGrid(5, 5);
   const margin = 400;
 
   return ({ context, width, height }: Props) => {
     // white background
     context.fillStyle = '#fff';
     context.fillRect(0, 0, width, height);
-
-    points.forEach(({ position }) => {
-      const [u, v] = position;
-      const x = lerp(margin, width - margin, u);
-      const y = lerp(margin, height - margin, v);
-
-      // the dot for the current grid point
-      context.beginPath();
-      context.arc(x, y, width * 0.005, 0, Math.PI * 2, false);
-      context.fillStyle = '#ccc';
-      context.fill();
-      context.closePath();
-    });
 
     // connect two random points on the grid
     const getRandomPoint = () => {
@@ -93,6 +80,7 @@ const sketch = () => {
       context.lineWidth = 32;
       context.strokeStyle = '#fff';
       context.stroke();
+      context.fillStyle = 'rgba(0, 0, 0, 0.1)';
       context.fill();
     };
 

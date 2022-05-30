@@ -168,7 +168,9 @@ declare module 'canvas-sketch' {
     width: number;
   };
 
-  export type SketchFunction = (props: Props) => (props: Props) => void;
+  export type SketchFunction =
+    | ((props: Props) => (props: Props) => void)
+    | ((props: Props) => any);
 
   export const PaperSizes: { [key in DimensionPresets]: PaperSize };
 
