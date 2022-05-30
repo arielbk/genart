@@ -189,4 +189,8 @@ declare module 'canvas-sketch-util/random' {
   declare const getRandomSeed: () => number;
   declare const setSeed: (seed: string | number) => void;
   declare const value: (seed?: string) => number;
+  declare const range: (from: number, to: number) => number;
+  declare function pick<t>(array: T[]) {
+    return T;
+  };
 }
