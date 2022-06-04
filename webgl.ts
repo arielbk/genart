@@ -32,8 +32,8 @@ const sketch = ({ context }) => {
   const scene = new THREE.Scene();
 
   // Setup a geometry
-  const geometry = new THREE.SphereGeometry(1.3, 5, 35);
-  // const geometry = new THREE.BoxGeometry(1, 1, 1);
+  // const geometry = new THREE.SphereGeometry(1.3, 5, 35);
+  const geometry = new THREE.TorusGeometry(1, 1, 10);
 
   let palette = random.pick(palettes);
 
@@ -42,7 +42,7 @@ const sketch = ({ context }) => {
     // Setup a material
     const material = new THREE.MeshBasicMaterial({
       color: random.pick(palette),
-      wireframe: true,
+      wireframe: random.value() > 0.5,
     });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(
@@ -59,8 +59,8 @@ const sketch = ({ context }) => {
     scene.add(mesh);
   }
 
-  const spotLight = new THREE.SpotLight(0xffffff);
-  spotLight.position.set(100, 1000, 100);
+  const spotLight = new THREE.SpotLight('white');
+  spotLight.position.set(1, 1, 1);
 
   spotLight.castShadow = true;
 
@@ -101,14 +101,16 @@ const sketch = ({ context }) => {
 
       // Update the camera
       camera.updateProjectionMatrix();
-
-      // camera.aspect = viewportWidth / viewportHeight;
     },
     // Update & render your scene here
     render({ time }) {
-      // camera.rotation.x = time * 0.01;
-      camera.rotation.z = time * 0.02;
-      camera.rotation.y = time * time * 0.00001 * random.range(0.1, 0.4);
+      const repeatTime = 10;
+      let direction = time % repeatTime > repeatTime / 2 ? 'left' : 'right';
+      const difference = time < 60 ? time * 0.00001 : 0.004;
+      camera.rotation.y =
+        direction === 'right'
+          ? camera.rotation.y + difference
+          : camera.rotation.y - difference;
       renderer.render(scene, camera);
     },
     // Dispose of events & renderer for cleaner hot-reloading

@@ -53,15 +53,15 @@ const sketch = ({ context }) => {
     // Setup your scene
     const scene = new THREE.Scene();
     // Setup a geometry
-    const geometry = new THREE.SphereGeometry(1.3, 5, 35);
-    // const geometry = new THREE.BoxGeometry(1, 1, 1);
+    // const geometry = new THREE.SphereGeometry(1.3, 5, 35);
+    const geometry = new THREE.TorusGeometry(1, 1, 10);
     let palette = random_1.default.pick(nice_color_palettes_1.default);
     // Setup a mesh with geometry + material
     for (let i = 0; i < 40; i++) {
         // Setup a material
         const material = new THREE.MeshBasicMaterial({
             color: random_1.default.pick(palette),
-            wireframe: true,
+            wireframe: random_1.default.value() > 0.5,
         });
         const mesh = new THREE.Mesh(geometry, material);
         mesh.position.set(random_1.default.range(-1, 0.5), random_1.default.range(-1, 0.5), random_1.default.range(-1, 0.5));
@@ -69,8 +69,8 @@ const sketch = ({ context }) => {
         mesh.scale.multiplyScalar(0.2);
         scene.add(mesh);
     }
-    const spotLight = new THREE.SpotLight(0xffffff);
-    spotLight.position.set(100, 1000, 100);
+    const spotLight = new THREE.SpotLight('white');
+    spotLight.position.set(1, 1, 1);
     spotLight.castShadow = true;
     spotLight.shadow.mapSize.width = 1024;
     spotLight.shadow.mapSize.height = 1024;
@@ -100,13 +100,16 @@ const sketch = ({ context }) => {
             camera.lookAt(new THREE.Vector3());
             // Update the camera
             camera.updateProjectionMatrix();
-            // camera.aspect = viewportWidth / viewportHeight;
         },
         // Update & render your scene here
         render({ time }) {
-            // camera.rotation.x = time * 0.01;
-            camera.rotation.z = time * 0.02;
-            camera.rotation.y = time * time * 0.00001 * random_1.default.range(0.1, 0.4);
+            const repeatTime = 10;
+            let direction = time % repeatTime > repeatTime / 2 ? 'left' : 'right';
+            const difference = time < 60 ? time * 0.00001 : 0.004;
+            camera.rotation.y =
+                direction === 'right'
+                    ? camera.rotation.y + difference
+                    : camera.rotation.y - difference;
             renderer.render(scene, camera);
         },
         // Dispose of events & renderer for cleaner hot-reloading
