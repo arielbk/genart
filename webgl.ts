@@ -16,6 +16,14 @@ const settings: SettingsObject = {
   attributes: { antialias: true },
 };
 
+type Range = [number, number];
+
+// config
+const positionRange: Range = [-0.5, 0.5];
+const scaleRange: Range = [-1, 0.5];
+const bgColor = '#fff';
+const scalar = 0.2;
+
 const sketch = ({ context }) => {
   // Create a renderer
   const renderer = new THREE.WebGLRenderer({
@@ -23,7 +31,7 @@ const sketch = ({ context }) => {
   });
 
   // WebGL background color
-  renderer.setClearColor('#111', 1);
+  renderer.setClearColor(bgColor, 1);
 
   // Setup a camera
   const camera = new THREE.OrthographicCamera();
@@ -33,45 +41,38 @@ const sketch = ({ context }) => {
 
   // Setup a geometry
   // const geometry = new THREE.SphereGeometry(1.3, 5, 35);
-  const geometry = new THREE.TorusGeometry(1, 1, 10);
+  const geometry = new THREE.BoxGeometry(2, 2);
 
   let palette = random.pick(palettes);
 
   // Setup a mesh with geometry + material
   for (let i = 0; i < 40; i++) {
     // Setup a material
-    const material = new THREE.MeshBasicMaterial({
+    const material = new THREE.MeshStandardMaterial({
       color: random.pick(palette),
-      wireframe: random.value() > 0.5,
+      // wireframe: random.value() > 0.5,
     });
     const mesh = new THREE.Mesh(geometry, material);
     mesh.position.set(
-      random.range(-1, 0.5),
-      random.range(-1, 0.5),
-      random.range(-1, 0.5)
+      random.range(positionRange[0], positionRange[1]),
+      random.range(positionRange[0], positionRange[1]),
+      random.range(positionRange[0], positionRange[1])
     );
     mesh.scale.set(
-      random.range(-1, 1),
-      random.range(-1, 1),
-      random.range(-1, 1)
+      random.range(scaleRange[0], scaleRange[1]),
+      random.range(scaleRange[0], scaleRange[1]),
+      random.range(scaleRange[0], scaleRange[1])
     );
-    mesh.scale.multiplyScalar(0.2);
+    mesh.scale.multiplyScalar(scalar);
     scene.add(mesh);
   }
 
-  const spotLight = new THREE.SpotLight('white');
-  spotLight.position.set(1, 1, 1);
+  scene.add(new THREE.AmbientLight('#999'));
 
-  spotLight.castShadow = true;
+  const light = new THREE.DirectionalLight('white', 1);
+  light.position.set(0, 0, 4);
 
-  spotLight.shadow.mapSize.width = 1024;
-  spotLight.shadow.mapSize.height = 1024;
-
-  spotLight.shadow.camera.near = 500;
-  spotLight.shadow.camera.far = 4000;
-  spotLight.shadow.camera.fov = 30;
-
-  scene.add(spotLight);
+  scene.add(light);
 
   // draw each frame
   return {
@@ -106,7 +107,7 @@ const sketch = ({ context }) => {
     render({ time }) {
       const repeatTime = 10;
       let direction = time % repeatTime > repeatTime / 2 ? 'left' : 'right';
-      const difference = time < 60 ? time * 0.00001 : 0.004;
+      const difference = time < 60 ? time * 0.00001 : 0.0004;
       camera.rotation.y =
         direction === 'right'
           ? camera.rotation.y + difference
