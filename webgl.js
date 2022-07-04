@@ -31,10 +31,14 @@ const canvas_sketch_1 = __importDefault(require("canvas-sketch"));
 const random_1 = __importDefault(require("canvas-sketch-util/random"));
 const THREE = __importStar(require("three"));
 const nice_color_palettes_1 = __importDefault(require("nice-color-palettes"));
+const bezier_easing_1 = __importDefault(require("bezier-easing"));
 global.THREE = THREE;
 // Include any additional ThreeJS examples below
 require("three/examples/js/controls/OrbitControls");
 const settings = {
+    dimensions: [512, 512],
+    fps: 24,
+    duration: 4,
     // Make the loop animated
     animate: true,
     // Get a WebGL canvas rather than 2D
@@ -46,9 +50,10 @@ const positionRange = [-0.5, 0.5];
 const scaleRange = [-1, 1];
 const bgColor = '#eee';
 const scalar = 0.2;
-const shapes = 1;
-const repeatTime = 1;
+const shapes = 70;
+const repeatTime = 4;
 const shadowColour = 'black';
+const rotationScalar = 0.5;
 const sketch = ({ context }) => {
     // Create a renderer
     const renderer = new THREE.WebGLRenderer({
@@ -83,6 +88,7 @@ const sketch = ({ context }) => {
     light.position.set(0, 2, 2);
     scene.add(light);
     scene.add(new THREE.AmbientLight(shadowColour));
+    const easeFn = (0, bezier_easing_1.default)(0.62, -0.07, 0.37, 1.22);
     // draw each frame
     return {
         // Handle resize events here
@@ -107,15 +113,9 @@ const sketch = ({ context }) => {
             camera.updateProjectionMatrix();
         },
         // Update & render your scene here
-        render({ time }) {
-            let direction = time % repeatTime > repeatTime / 2 ? 'left' : 'right';
-            if (direction === 'left' && Math.floor(time) % 3 == 0)
-                addShapes();
-            const difference = time < 60 ? time * 0.00001 : 0.0004;
-            camera.rotation.y =
-                direction === 'right'
-                    ? camera.rotation.y + difference * 2
-                    : camera.rotation.y - difference * 2;
+        render({ playhead }) {
+            const t = Math.sin(playhead * Math.PI) * 4;
+            scene.rotation.z = easeFn(t);
             renderer.render(scene, camera);
         },
         // Dispose of events & renderer for cleaner hot-reloading

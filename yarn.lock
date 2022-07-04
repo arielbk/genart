@@ -14,6 +14,18 @@
   dependencies:
     defer-to-connect "^1.0.1"
 
+"@types/bezier-easing@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@types/bezier-easing/-/bezier-easing-2.1.2.tgz#04ce5a6e148543f5dca4e6066db363b19a6f294a"
+  integrity sha512-1f9PSSooB7VBfwNQm5nKE8i7XXWWtjKPmm1apg52pxq/mmuyJNZpvEzR2n+c0+XPs0ldLoVWWp54tqkXsKxFsA==
+  dependencies:
+    bezier-easing "*"
+
+"@types/eases@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@types/eases/-/eases-1.0.2.tgz#11473706705d5025d423826414d460956bcb5434"
+  integrity sha512-XVMdH9hz0mwa3cOUIjAXuQWfF9+eGgEXpFwssWH/H2g1NZHs2QKYCNuf+rAjUvI7fF8Pq6rb5FrNo2RNxrPI+w==
+
 "@types/three@^0.140.0":
   version "0.140.0"
   resolved "https://registry.yarnpkg.com/@types/three/-/three-0.140.0.tgz#3b74a021a69a6e2cd0e2550def15aa4c1c20e924"
@@ -51,6 +63,11 @@ array-almost-equal@^1.0.0:
   dependencies:
     almost-equal "0.0.0"
     an-array "^1.0.0"
+
+bezier-easing@*, bezier-easing@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/bezier-easing/-/bezier-easing-2.1.0.tgz#c04dfe8b926d6ecaca1813d69ff179b7c2025d86"
+  integrity sha512-gbIqZ/eslnUFC1tjEvtz0sgx+xTK20wDnYMIA27VA04R7w6xxXQPZDbibjA9DTWZRA2CXtwHykkVzlCaAJAZig==
 
 cacheable-request@^6.0.0:
   version "6.1.0"
@@ -194,6 +211,11 @@ duplexer3@^0.1.4:
   version "0.1.4"
   resolved "https://registry.npmjs.org/duplexer3/-/duplexer3-0.1.4.tgz"
   integrity sha1-7gHdHKwO08vH/b6jfcCo8c4ALOI=
+
+eases@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/eases/-/eases-1.0.8.tgz#f1f5069a6b6ed2ea510f9c6110398d63efe9aee6"
+  integrity sha512-U8TwgFYPktV07tV9yxoIu9TIWsXHGOuDJNXlyihWEMnGMXaoh2kkfWf0N1itbCjHWrgs+/leubuG7m+OgkfA0Q==
 
 end-of-stream@^1.1.0:
   version "1.4.4"

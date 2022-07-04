@@ -3,12 +3,18 @@ import canvasSketch, { SettingsObject } from 'canvas-sketch';
 import random from 'canvas-sketch-util/random';
 import * as THREE from 'three';
 import palettes from 'nice-color-palettes';
+import eases from 'eases';
+import BezierEasing from 'bezier-easing';
+
 global.THREE = THREE;
 
 // Include any additional ThreeJS examples below
 import 'three/examples/js/controls/OrbitControls';
 
 const settings: SettingsObject = {
+  dimensions: [512, 512],
+  fps: 24,
+  duration: 4,
   // Make the loop animated
   animate: true,
   // Get a WebGL canvas rather than 2D
@@ -23,9 +29,10 @@ const positionRange: Range = [-0.5, 0.5];
 const scaleRange: Range = [-1, 1];
 const bgColor = '#eee';
 const scalar = 0.2;
-const shapes = 1;
-const repeatTime = 1;
+const shapes = 70;
+const repeatTime = 4;
 const shadowColour = 'black';
+const rotationScalar = 0.5;
 
 const sketch = ({ context }) => {
   // Create a renderer
@@ -78,6 +85,8 @@ const sketch = ({ context }) => {
   scene.add(light);
   scene.add(new THREE.AmbientLight(shadowColour));
 
+  const easeFn = BezierEasing(0.62, -0.07, 0.37, 1.22);
+
   // draw each frame
   return {
     // Handle resize events here
@@ -108,15 +117,9 @@ const sketch = ({ context }) => {
       camera.updateProjectionMatrix();
     },
     // Update & render your scene here
-    render({ time }) {
-      let direction = time % repeatTime > repeatTime / 2 ? 'left' : 'right';
-      if (direction === 'left' && Math.floor(time) % 3 == 0) addShapes();
-
-      const difference = time < 60 ? time * 0.00001 : 0.0004;
-      camera.rotation.y =
-        direction === 'right'
-          ? camera.rotation.y + difference * 2
-          : camera.rotation.y - difference * 2;
+    render({ playhead }) {
+      const t = Math.sin(playhead * Math.PI) * 4;
+      scene.rotation.z = easeFn(t);
       renderer.render(scene, camera);
     },
     // Dispose of events & renderer for cleaner hot-reloading
