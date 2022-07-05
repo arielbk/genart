@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "watch": "tsc --watch --outdir build",
     "sketch": "npx canvas-sketch-cli sketch.js",
-    "buildings": "npx canvas-sketch-cli build/buildings.js",
-    "webgl": "npx canvas-sketch-cli build/webgl.js",
+    "buildings": "npx canvas-sketch-cli build/buildings.js --hot",
+    "webgl": "npx canvas-sketch-cli build/webgl.js --hot",
     "shader": "npx canvas-sketch-cli build/shader.js --hot"
   },
   "keywords": [],
