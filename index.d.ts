@@ -5,6 +5,4 @@ declare module 'nice-color-palettes' {
   export default palettes;
 }
 
-declare module 'glslify' {
-  export default function glsl(code: string): string;
-}
+declare module 'glslify';
