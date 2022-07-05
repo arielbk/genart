@@ -166,6 +166,7 @@ declare module 'canvas-sketch' {
     units: Units;
     update: (settings: SettingsObject) => void;
     width: number;
+    gl: WebGLContextAttributes;
   };
 
   export type SketchFunction =
