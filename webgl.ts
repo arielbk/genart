@@ -6,15 +6,19 @@ import palettes from 'nice-color-palettes';
 import eases from 'eases';
 import BezierEasing from 'bezier-easing';
 
+// necessary to use require syntax for this to allow pragmas
+const glsl = require('glslify');
+
 global.THREE = THREE;
 
 // Include any additional ThreeJS examples below
 import 'three/examples/js/controls/OrbitControls';
+import { Mesh, BoxGeometry, ShaderMaterial } from 'three';
 
 const settings: SettingsObject = {
   dimensions: [512, 512],
   fps: 24,
-  duration: 4,
+  // duration: 4,
   // Make the loop animated
   animate: true,
   // Get a WebGL canvas rather than 2D
@@ -55,12 +59,42 @@ const sketch = ({ context }) => {
 
   let palette = random.pick(palettes);
 
+  const fragmentShader = glsl(/* glsl */ `
+    varying vec2 vUv;
+    uniform vec3 color;
+
+    void main() {
+      gl_FragColor = vec4(color * vUv.x, 1.0);
+    }
+  `);
+  const vertexShader = glsl(/* glsl */ `
+    varying vec2 vUv;
+    uniform float time;
+
+    #pragma glslify: noise = require('glsl-noise/simplex/4d');
+
+    void main() {
+      vUv = uv;
+      vec3 pos = position.xyz;
+      pos += noise(vec4(position.xyz, time / 5.0));
+
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+    }
+  `);
+
+  const meshes: Mesh<BoxGeometry, ShaderMaterial>[] = [];
   const addShapes = () => {
     // Setup a mesh with geometry + material
     for (let i = 0; i < shapes; i++) {
       // Setup a material
-      const material = new THREE.MeshToonMaterial({
-        color: random.pick(palette),
+      const material = new THREE.ShaderMaterial({
+        fragmentShader,
+        vertexShader,
+        uniforms: {
+          time: { value: 0 },
+          color: { value: new THREE.Color(random.pick(palette)) },
+        },
+        // color: random.pick(palette),
       });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.set(
@@ -75,6 +109,7 @@ const sketch = ({ context }) => {
       );
       mesh.scale.multiplyScalar(scalar);
       scene.add(mesh);
+      meshes.push(mesh);
     }
   };
 
@@ -117,9 +152,13 @@ const sketch = ({ context }) => {
       camera.updateProjectionMatrix();
     },
     // Update & render your scene here
-    render({ playhead }) {
-      const t = Math.sin(playhead * Math.PI) * 4;
+    render({ time }) {
+      const t = Math.sin((time * Math.PI) / 16);
       scene.rotation.z = easeFn(t);
+
+      meshes.forEach((mesh) => {
+        mesh.material.uniforms.time.value = time;
+      });
       renderer.render(scene, camera);
     },
     // Dispose of events & renderer for cleaner hot-reloading
